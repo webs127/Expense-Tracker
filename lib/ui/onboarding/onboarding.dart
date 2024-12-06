@@ -1,4 +1,5 @@
 import 'package:expense_tracker/app/route.dart';
+import 'package:expense_tracker/core/manager/color_manager.dart';
 import 'package:expense_tracker/core/manager/image_manager.dart';
 import 'package:expense_tracker/core/manager/textstyle_manager.dart';
 import 'package:expense_tracker/ui/onboarding/controller/onboarding_controller.dart';
@@ -77,8 +78,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                             margin: const EdgeInsets.only(right: 3),
                             decoration: BoxDecoration(
                                 color: (data.currentIndex == index)
-                                    ? Colors.blue
-                                    : Colors.grey,
+                                    ? ColorManager.primary
+                                    : ColorManager.grey2,
                                 borderRadius: BorderRadius.circular(100)),
                             width: 20,
                             height: 7,
@@ -91,7 +92,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               minWidth: 327,
               height: 48,
               elevation: 10,
-              color: Colors.blue,
+              color: ColorManager.primary,
               shape: OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.blue),
                 borderRadius: BorderRadius.circular(15)
