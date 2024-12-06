@@ -1,8 +1,8 @@
 import 'package:expense_tracker/app/route.dart';
 import 'package:expense_tracker/core/manager/color_manager.dart';
 import 'package:expense_tracker/core/manager/textstyle_manager.dart';
-import 'package:expense_tracker/ui/auth/login/login.dart';
 import 'package:expense_tracker/ui/overview/controller/overview_controller.dart';
+import 'package:expense_tracker/widgets/app_button.dart';
 import 'package:expense_tracker/widgets/components/carousel_tile.dart';
 import 'package:expense_tracker/widgets/shared/entry_tile.dart';
 import 'package:flutter/material.dart';
