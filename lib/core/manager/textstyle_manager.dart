@@ -20,7 +20,7 @@ class AppTextStyles {
     color: Colors.black,
   );
 
-  // Bold Text Style
+  // SemiBold Text Style
   static const TextStyle semiBold = TextStyle(
     fontFamily: _fontFamily,
     fontSize: 16.0,
