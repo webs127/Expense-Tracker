@@ -1,6 +1,8 @@
 import 'package:expense_tracker/app/route.dart';
 import 'package:expense_tracker/core/manager/color_manager.dart';
 import 'package:expense_tracker/core/manager/textstyle_manager.dart';
+import 'package:expense_tracker/core/models/expense_model.dart';
+import 'package:expense_tracker/ui/overview/controller/expense_controller.dart';
 import 'package:expense_tracker/ui/overview/controller/overview_controller.dart';
 import 'package:expense_tracker/widgets/app_button.dart';
 import 'package:expense_tracker/widgets/components/carousel_tile.dart';
@@ -68,7 +70,8 @@ class _OverViewScreenState extends State<OverViewScreen> {
                                 ),
                                 child: InkWell(
                                   onTap: () {
-                                    Navigator.pushNamed(context, RouteManager.entries);
+                                    Navigator.pushNamed(
+                                        context, RouteManager.entries);
                                   },
                                   child: const SizedBox(
                                     width: 40,
@@ -81,13 +84,42 @@ class _OverViewScreenState extends State<OverViewScreen> {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        Column(
-                          children: List.generate(
-                              10,
-                              (index) => const EntryTile(
-                                    padding: 24,
-                                  )),
-                        )
+                        Consumer<ExpenseController>(
+                            builder: (context, expense, __) {
+                          return FutureBuilder<List<ExpenseModel>>(
+                              future: expense.getExpenses(),
+                              builder: (context, snapshot) {
+                                {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  } else {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 14),
+                                      child: Column(
+                                        children: List.generate(
+                                            snapshot.data!.length,
+                                            (index) => EntryTile(
+                                                  padding: 10,
+                                                  title: snapshot
+                                                      .data![index].name,
+                                                  amount: snapshot
+                                                      .data![index].amount,
+                                                  paymentMethod: snapshot
+                                                      .data![index]
+                                                      .paymentMethod,
+                                                  date: snapshot
+                                                      .data![index].date,
+                                                )),
+                                      ),
+                                    );
+                                  }
+                                }
+                              });
+                        })
                       ],
                     ),
                   ),
@@ -134,30 +166,47 @@ class AppHeader extends StatelessWidget {
 Widget buildCarouselList() => SizedBox(
       height: 150,
       child: Consumer<OverviewController>(builder: (context, data, __) {
-        return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            itemCount: 3,
-            itemBuilder: (context, i) {
-              return CarouselTile(
-                iconcolor: (data.currentIndex == i)
-                    ? ColorManager.white
-                    : ColorManager.dark,
-                textcolor: (data.currentIndex == i)
-                    ? ColorManager.white
-                    : ColorManager.dark,
-                object: data.entries[i],
-                color: (data.currentIndex == i)
-                    ? ColorManager.primary
-                    : ColorManager.white,
-                onTap: () {
-                  data.onSelected(i);
-                  if (data.currentIndex == 1) {
-                    Navigator.pushNamed(context, RouteManager.expense);
-                  }
-                },
-              );
-            });
+        return Consumer<ExpenseController>(builder: (context, total, __) {
+          return FutureBuilder<double>(
+              future: total.getTotal(),
+              builder: (context, snapshot) {
+                return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: data.entries.length,
+                    itemBuilder: (context, i) {
+                      return CarouselTile(
+                        iconcolor: (data.currentIndex == i)
+                            ? ColorManager.white
+                            : ColorManager.dark,
+                        gradient: (data.currentIndex == i)
+                            ? LinearGradient(
+                                colors: [
+                                  ColorManager.primaryLight1,
+                                  ColorManager.primary,
+                                ],
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
+                                stops: const [.1, .7])
+                            : null,
+                        textcolor: (data.currentIndex == i)
+                            ? ColorManager.white
+                            : ColorManager.dark,
+                        object: (i == 1)
+                            ? EntryObject(
+                                name: "Total Expense", amount: snapshot.data)
+                            : data.entries[i],
+                        color: ColorManager.white,
+                        onTap: () {
+                          data.onSelected(i);
+                          if (data.currentIndex == 1) {
+                            Navigator.pushNamed(context, RouteManager.expense);
+                          }
+                        },
+                      );
+                    });
+              });
+        });
       }),
     );
 
@@ -169,17 +218,33 @@ Widget buildNavList() => SizedBox(
             shrinkWrap: true,
             itemCount: 3,
             itemBuilder: (context, i) {
+              List navs = [
+                RouteManager.savings,
+                RouteManager.reminders,
+                RouteManager.notifications
+              ];
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6),
                 child: AppButton(
                   width: 101,
                   onPressed: () {
                     data.onchanged(i);
+                    Navigator.pushNamed(context, navs[i]);
                   },
                   height: 48,
                   backgroundColor: (data.currentValue == i)
                       ? ColorManager.primary
                       : ColorManager.white,
+                  gradient: (data.currentValue == i)
+                      ? LinearGradient(
+                          colors: [
+                            ColorManager.primaryLight1,
+                            ColorManager.primary,
+                          ],
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          stops: const [.1, .7])
+                      : null,
                   color: (data.currentValue == i)
                       ? ColorManager.white
                       : ColorManager.dark,
