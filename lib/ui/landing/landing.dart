@@ -1,5 +1,8 @@
+import 'package:expense_tracker/app/route.dart';
 import 'package:expense_tracker/core/manager/color_manager.dart';
 import 'package:expense_tracker/ui/landing/controller/landing_controller.dart';
+import 'package:expense_tracker/ui/reminders/reminder.dart';
+import 'package:expense_tracker/ui/savings/savings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -29,19 +32,43 @@ class _LandingScreenState extends State<LandingScreen> {
           items: List.generate(
               data.length,
               (index) => BottomNavigationBarItem(
-                  icon: SvgPicture.asset(data.landingObjects[index].icon),
+                  icon: SvgPicture.asset(data.landingObjects[index].icon,
+                  color: (data.currenIndex == index) ? ColorManager.primary : ColorManager.grey8,
+                  ),
                   label: data.landingObjects[index].name)),
         ),
-        floatingActionButton: FloatingActionButton(
-            shape: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(100),
-                borderSide: BorderSide(color: ColorManager.primary)),
-            backgroundColor: ColorManager.primary,
-            child: Icon(
-              Icons.add,
-              color: ColorManager.white,
-            ),
-            onPressed: () {}),
+        floatingActionButton: (data.currenIndex == 0 || data.currenIndex == data.length - 1)
+            ? null
+            : InkWell(
+                onTap: () {
+                  if (data.view is SavingsScreen) {
+                    Navigator.pushNamed(context, RouteManager.addgoal);
+                  }
+                  if (data.view is ReminderScreen) {
+                    Navigator.pushNamed(context, RouteManager.addreminder);
+                  }
+                },
+                child: Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: [
+                          ColorManager.primaryLight1,
+                          ColorManager.primary,
+                        ],
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
+                        stops: const [.1, .7]),
+                    color: ColorManager.primary,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: Icon(
+                    Icons.add,
+                    color: ColorManager.white,
+                  ),
+                ),
+              ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       );
     });
