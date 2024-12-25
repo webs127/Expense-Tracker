@@ -14,6 +14,7 @@ class ColorManager {
   static Color black = HexColor.hexString("#000000");
   static Color white = HexColor.hexString("#ffffff");
   static Color primary = HexColor.hexString("#0E33F3");
+  static Color primaryLight1 = HexColor.hexString("#2FDAFF");
   static Color primaryLight = HexColor.hexString("#A0CCF8");
   static Color primaryDark = HexColor.hexString("#57A4F2");
   static Color grey2 = HexColor.hexString("#EBEEF0");
@@ -24,9 +25,5 @@ class ColorManager {
   static Color grey3 = HexColor.hexString("#707070");
   static Color grey4 = HexColor.hexString("#6B7580");
   static Color dark = HexColor.hexString("#242D35");
-  
-  
-
-  
-  
+  static Color error = HexColor.hexString("#EF4E4E");
 }
