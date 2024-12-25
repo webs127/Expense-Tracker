@@ -119,7 +119,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         onPressed: () {},
         color: ColorManager.white,
         text: "RESET PASSWORD",
-        backgroundColor: ColorManager.primary,
+        gradient: LinearGradient(
+                                colors: [
+                                  ColorManager.primaryLight1,
+                                  ColorManager.primary,
+                                ],
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
+                                stops: const [0, .7]),
       ),
     );
   }
