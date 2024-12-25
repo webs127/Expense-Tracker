@@ -2,9 +2,13 @@ import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:expense_tracker/app/route.dart';
 import 'package:expense_tracker/core/manager/color_manager.dart';
 import 'package:expense_tracker/core/manager/textstyle_manager.dart';
+import 'package:expense_tracker/core/models/expense_model.dart';
+import 'package:expense_tracker/ui/overview/controller/expense_controller.dart';
 import 'package:expense_tracker/widgets/components/calendar.dart';
+import 'package:expense_tracker/widgets/shared/circle_avatar.dart';
 import 'package:expense_tracker/widgets/shared/entry_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ExpenseScreen extends StatefulWidget {
@@ -75,11 +79,18 @@ class _ExpenseScreenState extends State<ExpenseScreen>
                     width: 140,
                     height: 140,
                     child: CustomCircleAvatar(
-                      color: ColorManager.primary,
+                      gradient: LinearGradient(
+                          colors: [
+                            ColorManager.primaryLight1,
+                            ColorManager.primary,
+                          ],
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          stops: const [.1, .7]),
                       width: 120,
                       height: 120,
                       child: Text(
-                        "\$1600",
+                        "\$0",
                         style: AppTextStyles.custom(
                             fontSize: 24,
                             fontWeight: FontWeight.w500,
@@ -89,75 +100,96 @@ class _ExpenseScreenState extends State<ExpenseScreen>
               ),
               const SizedBox(height: 20),
               Text(
-                "You have Spent 60% of you budget",
+                "You have Spent 0% of you budget",
                 style: AppTextStyles.custom(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: ColorManager.dark),
               ),
               const SizedBox(height: 32),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  color: ColorManager.white,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                height: 400,
-                child: ContainedTabBarView(
-                  tabs: const [
-                    Text('Spends'),
-                    Text('Categories'),
-                  ],
-                  tabBarProperties: TabBarProperties(
-                    indicatorColor: ColorManager.primary,
-                    labelColor: ColorManager.dark,
-                    labelStyle: AppTextStyles.custom(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: ColorManager.dark),
-                    unselectedLabelColor: Colors.grey,
-                  ),
-                  views: [
-                    // First Tab Content
-                    ListView(
-                      padding: const EdgeInsets.only(top: 10),
-                      children: List.generate(
-                          4,
-                          (index) => const EntryTile(
-                                padding: 10,
-                              )),
-                    ),
+              Consumer<ExpenseController>(builder: (context, expense, __) {
+                return FutureBuilder<List<ExpenseModel>>(
+                    future: expense.getExpenses(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            color: ColorManager.white,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                          ),
+                          height: 400,
+                          child: ContainedTabBarView(
+                            tabs: const [
+                              Text('Spends'),
+                              Text('Categories'),
+                            ],
+                            tabBarProperties: TabBarProperties(
+                              indicatorColor: ColorManager.primary,
+                              labelColor: ColorManager.dark,
+                              labelStyle: AppTextStyles.custom(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorManager.dark),
+                              unselectedLabelColor: Colors.grey,
+                            ),
+                            views: [
+                              // First Tab Content
+                              ListView(
+                                padding: const EdgeInsets.only(top: 10),
+                                children: List.generate(
+                                    snapshot.data!.length,
+                                    (index) => EntryTile(
+                                          padding: 10,
+                                          title: snapshot.data![index].name,
+                                          amount: snapshot.data![index].amount,
+                                          paymentMethod: snapshot
+                                              .data![index].paymentMethod,
+                                          date: snapshot.data![index].date,
+                                        )),
+                              ),
 
-                    // Second Tab Content
-                    Center(
-                      child: Container(
-                        width: 327,
-                        height: 244,
-                        decoration: BoxDecoration(
-                            color: ColorManager.grey5,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: SfCircularChart(
-                          palette: const [],
-                          legend: const Legend(isVisible: true),
-                          series: <RadialBarSeries<TaskData, String>>[
-                            RadialBarSeries<TaskData, String>(
-                              dataSource: getTaskData(),
-                              xValueMapper: (data, index) => data.category,
-                              yValueMapper: (data, index) => data.percentage,
-                              pointColorMapper: (data, index) => data.color,
-                              maximumValue: 100,
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
+                              // Second Tab Content
+                              Center(
+                                child: Container(
+                                  width: 327,
+                                  height: 244,
+                                  decoration: BoxDecoration(
+                                      color: ColorManager.grey5,
+                                      borderRadius: BorderRadius.circular(20)),
+                                  child: SfCircularChart(
+                                    legend: const Legend(isVisible: true),
+                                    series: <RadialBarSeries<TaskData, String>>[
+                                      RadialBarSeries<TaskData, String>(
+                                        cornerStyle: CornerStyle.endCurve,
+                                        animationDuration: 1000,
+                                        dataSource: getTaskData(),
+                                        xValueMapper: (data, index) =>
+                                            data.category,
+                                        yValueMapper: (data, index) =>
+                                            data.percentage,
+                                        pointColorMapper: (data, index) =>
+                                            data.color,
+                                        maximumValue: 100,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    });
+              })
             ],
           ),
         ),
@@ -183,29 +215,4 @@ class TaskData {
 
   TaskData(
       {required this.color, required this.category, required this.percentage});
-}
-
-class CustomCircleAvatar extends StatelessWidget {
-  final double width;
-  final double height;
-  final Widget child;
-  final Color color;
-  const CustomCircleAvatar({
-    super.key,
-    required this.width,
-    required this.height,
-    required this.child,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-        width: width,
-        height: height,
-        child: CircleAvatar(
-          backgroundColor: color,
-          child: child,
-        ));
-  }
 }
