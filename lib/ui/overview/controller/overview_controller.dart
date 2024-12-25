@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 class OverviewController with ChangeNotifier {
   List<EntryObject> entries = [
-    EntryObject(name: "Total Salary", amount: 1244.38),
-    EntryObject(name: "Total Expense", amount: 844.38),
-    EntryObject(name: "Monthly Budget", amount: 3544.38)
+    EntryObject(name: "Total Salary", amount: 0),
+    EntryObject(name: "Total Expense", amount: 0),
+    EntryObject(name: "Monthly Budget", amount: 0)
   ];
+
 
   final List navs = [
     "Savings",
@@ -28,7 +29,7 @@ class OverviewController with ChangeNotifier {
 
 class EntryObject {
   final String name;
-  final double amount;
+  final double? amount;
 
   EntryObject({required this.name, required this.amount});
   
