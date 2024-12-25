@@ -2,9 +2,12 @@ import 'package:expense_tracker/app/route.dart';
 import 'package:expense_tracker/core/manager/color_manager.dart';
 import 'package:expense_tracker/core/manager/image_manager.dart';
 import 'package:expense_tracker/core/manager/textstyle_manager.dart';
+import 'package:expense_tracker/ui/auth/controller/auth_controller.dart';
 import 'package:expense_tracker/widgets/app_button.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -44,22 +47,31 @@ class _LoginScreenState extends State<LoginScreen> {
                       icon: Icons.person_outline,
                     ),
                     const SizedBox(
-                      height: 21,
+                      height: 24,
                     ),
                     const CustomTextFormField(
                       hintText: "Password",
                       icon: Icons.lock_outline,
                     ),
                     const SizedBox(
-                      height: 21,
+                      height: 30,
                     ),
                     AppButton(
-                      width: 327,
+                      width: MediaQuery.of(context).size.width,
                       height: 55,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, RouteManager.landing);
+                      },
                       color: ColorManager.white,
                       text: "LOGIN",
-                      backgroundColor: ColorManager.primary,
+                      gradient: LinearGradient(
+                          colors: [
+                            ColorManager.primaryLight1,
+                            ColorManager.primary,
+                          ],
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          stops: const [0, .7]),
                     ),
                     const SizedBox(
                       height: 40,
@@ -90,16 +102,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(
                       height: 30,
                     ),
-                    const AppButton(
-                      width: 327,
+                    AppButton(
+                      width: MediaQuery.of(context).size.width,
                       height: 55,
                       text: "CONTINUE WITH GOOGLE",
                     ),
                     const SizedBox(
                       height: 20,
                     ),
-                    const AppButton(
-                      width: 327,
+                    AppButton(
+                      width: MediaQuery.of(context).size.width,
                       height: 55,
                       text: "CONTINUE WITH APPLE",
                     ),
@@ -115,7 +127,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: ColorManager.dark),
                             children: [
                           TextSpan(
-                            text: "Register here",
+                            text: "Register Here",
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                context.read<AuthController>().changeSatate();
+                              },
                             style: AppTextStyles.custom(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
