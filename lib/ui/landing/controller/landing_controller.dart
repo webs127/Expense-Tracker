@@ -9,9 +9,9 @@ class LandingController with ChangeNotifier {
   final List<LandingObject> landingObjects = [
     LandingObject(view: const OverViewScreen(), icon: ImageManager.home, name: "Home"),
     LandingObject(view: const SavingsScreen(), icon: ImageManager.savings, name: "Savings"),
+    LandingObject(view: const ReminderScreen(), icon: ImageManager.reminder, name: "Reminder"),
     LandingObject(
         view: const NotificationScreen(), icon: ImageManager.notification, name: "Notification"),
-    LandingObject(view: const ReminderScreen(), icon: ImageManager.reminder, name: "Reminder"),
 
   ];
 
